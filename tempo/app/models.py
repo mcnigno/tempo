@@ -73,7 +73,7 @@ class Project(Model, AuditMixin):
     
 class Order(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
+    name = Column(String(50), nullable=False)
     project_id = Column(Integer, ForeignKey('project.id'))
     project = relationship(Project, backref='Orders')
     payment_days = Column(Integer, nullable=False)
@@ -89,6 +89,10 @@ class Order(Model, AuditMixin):
     
     def amount_q(self):
         return session.query(func.sum(Order_revision.amount)).filter(Order_revision.order_id == self.id).all()
+    
+    
+    def total_hours(self):
+        return sum(Revision.hours for Revision in self.Revisions)
     
     def due_date(self):
         due_date = session.query(Order_revision).filter(

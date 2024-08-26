@@ -1031,10 +1031,10 @@ class OrderRevisionView(ModelView):
     show_template = 'appbuilder/general/model/show_cascade.html'
     edit_template = 'appbuilder/general/model/edit_cascade.html'
     
-    list_title = 'Oreder Revision | List'
-    add_title = 'Oreder Revision | Add'
-    edit_title = 'Oreder Revision | Edit'
-    show_title = 'Oreder Revision | Sow'
+    list_title = 'Order Revision | List'
+    add_title = 'Order Revision | Add'
+    edit_title = 'Order Revision | Edit'
+    show_title = 'Order Revision | Sow'
     
     @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
     def muldelete(self, items):
@@ -1050,12 +1050,17 @@ class OrderView(ModelView):
     list_columns = ['name', 'project']
     add_columns = ['name', 'project', 'payment_days', 'pending_deliverable']
     edit_columns = ['name', 'project', 'payment_days', 'pending_deliverable']
-    show_columns = ['name', 'project', 'payment_days', 'pending_deliverable','created_by','created_on','changed_by','changed_on']
+    show_columns = ['name', 'project', 'payment_days', 'pending_deliverable','amount','total_hours','created_by','created_on','changed_by','changed_on'] 
     
     related_views = [OrderRevisionView, ProjectTaskView]
     
     show_template = 'appbuilder/general/model/show_cascade.html'
     edit_template = 'appbuilder/general/model/edit_cascade.html'
+    
+    label_columns = {
+        'amount': 'Total amount',
+        'total_hours': 'Total hours'  
+    }
     
     @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
     def muldelete(self, items):
