@@ -1,0 +1,49 @@
+{% if deliverables|length > 0 %}
+
+<h4>Pending Deliverables</h4>
+<table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Deliverable</th>
+        <th scope="col">Version</th>
+        <th scope="col">Date</th>
+        <th scope="col">User</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+
+        {%for deliverable in deliverables%}
+          
+
+      <tr>
+        <th scope="row">{{deliverable.id}}</th>
+        <td>
+        {%for name in deliverable.name.splitlines()%}
+        <div class="row">{{name}}</div>
+        
+        {% endfor %}
+        </td>
+        <td>{{deliverable.revision}}</td>
+        <td>{{deliverable.created_on.strftime('%A %d %B, %Y')}}</td>
+        <td>{{deliverable.created_by}}</td>
+        <td>
+            <form hx-post="/isa/deliverable/new" hx-target="#new-deliverable">
+                <input type="hidden" name="name" value="{{deliverable.name}}" />
+                <input type="hidden" name="projecttask_id" value="{{deliverable.projecttask.id}}" />
+                <button class="btn show-icon" type="submit"><i class="fa fa-eye" aria-hidden="true" ></i></button>
+            </form>
+        </td>
+      </tr>
+        
+      {%endfor%}
+   
+    </tbody>
+  </table>
+  {% else %}
+  <h4>New Deliverable</h4>
+    {% for deliverable in search_deliverable.splitlines()%}
+    <p>{{deliverable}}</p>
+    {% endfor %}
+  {% endif %}

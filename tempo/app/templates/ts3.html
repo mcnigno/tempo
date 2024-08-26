@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ISA Timesheet</title>
+        {% block head_css %}
+        <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.css')}}"></link>
+        {% endblock %}
+    </head>
+
+
+
+    {% block content %}
+    <body>
+        <div class="h-100 p-5 text-bg-dark rounded-3">
+            <div class="row" id="timesheet">
+                <div class="col-3 col-md-3">
+                    <div>
+                        {%for project in projects%}
+                        <h3>{{project.name}}</h3>
+                            {%for projecttask in project.ProjectTasks%}
+                            <div class="class="btn-group-vertical" role="group" aria-label="Vertical radio toggle button group">
+                                
+                                
+                                <button type="button" hx-get="/ts/projecttask/{{projecttask.id}}" hx-target="#timesheet" hx-swap="innerHTML swap:0.5s" class="btn btn-primary position-relative">
+                                    {{projecttask.name}}
+                                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">15</span>
+                                </button>
+                                
+                                
+                            </div> 
+                            {%endfor%}
+                        {%endfor%}   
+                    </div>
+                </div>
+                <div class="col-9 col-md-9">
+                    
+                    
+                    
+            
+                </div>
+                
+            </div>
+        </div>
+        {% endblock %}
+        
+
+
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        {% block tail_js %}
+        <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+        <script src="{{url_for('static',filename='js/bootstrap.bundle.js')}}"></script>
+        {% endblock %}
+    </body>
+</html>

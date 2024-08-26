@@ -1,0 +1,35 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<div class="row" id="timesheet">
+    <div class="col-3 col-md-3">
+        <div>
+            {%for project in projects%}
+            <h3>{{project.name}}</h3>
+                {%for projecttask in project.ProjectTasks%}
+                <ul class="list-group">
+                    
+                    
+                    <button type="button" hx-get="/ts/projecttask/{{projecttask.id}}" hx-target="#timesheet" hx-swap="innerHTML swap:0.5s" class="list-group-item d-flex justify-content-between align-items-center">
+                        {{projecttask.name}}
+                        <span class="badge badge-primary badge-pill">15</span>
+                    </button>
+                    
+                    
+                </ul> 
+                {%endfor%}
+            {%endfor%}   
+        </div>
+    </div>
+    <div class="col-9 col-md-9">
+        
+        
+        
+   
+    </div>
+    
+</div>
+
+{% endblock %} 

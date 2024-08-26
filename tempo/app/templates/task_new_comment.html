@@ -1,0 +1,12 @@
+<tr>
+    <td class="comment ">{{comment.text}}</td>
+    <td class="user_name ">{{comment.created_by}}</td>
+    <td>
+        <button class="btn" hx-get="/get-edit-form/{{comment.id}}"><i class="fa fa-pencil" ></i></button>
+        
+    </td>
+    <td>
+        <button class="btn" hx-delete="/delete/{{comment.id}}"><i class="fa fa-trash" ></i></button>
+        
+    </td>
+</tr>

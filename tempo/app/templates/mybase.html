@@ -1,0 +1,16 @@
+{% extends 'appbuilder/baselayout.html' %}
+{% import 'appbuilder/baselib.html' as baselib with context %}
+
+{% block head_css %}
+    {{ super() }}
+    
+    <link rel="stylesheet" href="{{url_for('static',filename='css/custom.css')}}"></link>
+{% endblock %}
+
+{% block head_js %}
+    {{ super() }}
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+    <script src="{{url_for('static',filename='js/your_js_file.js')}}"></script>
+{% endblock %}
+
+

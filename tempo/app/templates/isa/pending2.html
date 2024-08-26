@@ -1,0 +1,77 @@
+{% if d_page.items|length > 0 %}
+
+<h4>Pending Deliverables</h4>
+<table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Deliverable</th>
+        <th scope="col">Version</th>
+        <th scope="col">Date</th>
+        <th scope="col">User</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+
+        {%for deliverable in d_page.items%}
+          
+
+      <tr>
+        <th scope="row">{{deliverable.id}}</th>
+        <td>
+        {%for name in deliverable.name.splitlines()%}
+        <div class="row">{{name}}</div>
+        
+        {% endfor %}
+        </td>
+        <td>{{deliverable.revision}}</td>
+        <td>{{deliverable.created_on.strftime('%A %d %B, %Y')}}</td>
+        <td>{{deliverable.created_by}}</td>
+        <td>
+            <form hx-post="/isa/deliverable/new" hx-target="#new-deliverable">
+                <input type="hidden" name="name" value="{{deliverable.name}}" />
+                <input type="hidden" name="projecttask_id" value="{{deliverable.projecttask.id}}" />
+                <button class="btn show-icon" type="submit"><i class="fa fa-eye" aria-hidden="true" ></i></button>
+            </form>
+        </td>
+      </tr>
+        
+      {%endfor%}
+
+         
+    </tbody>
+</table>
+{% else %}
+<h4>New Deliverable</h4>
+  {% for deliverable in search_deliverable.splitlines()%}
+  <p>{{deliverable}}</p>
+  {% endfor %}
+{% endif %}
+
+<nav aria-label="...">
+    <ul class="pagination justify-content-center">
+        {% for page in d_page.iter_pages() %}
+            {% if page %}
+                {% if page == d_page.page %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{page}}</span></li>
+                {% else %}
+                    <form>
+                    <li class="page-item"><a class="page-link" hx-post="/isa/search/pending2/{{page}}" hx-target="#new-deliverable" href="#">{{page}}</a></li>
+                    <input type="hidden" name="projecttask_id" value="{{projecttask_id}}" />
+                    <input type="hidden" name="name" value="{{search_deliverable}}" />
+                    </form>
+                {% endif %}
+            {% endif %}
+      {% endfor %}
+        {% if d_page and d_page.has_next %}
+            <form>
+                <li class="page-item"><a class="page-link" hx-post="/isa/search/pending2/{{d_page.next_num}}" hx-target="#new-deliverable" href="#">NEXT</a></li>
+                <input type="hidden" name="projecttask_id" value="{{projecttask_id}}" />
+                <input type="hidden" name="name" value="{{search_deliverable}}" />
+            </form>
+        {% endif %}
+
+
+    </ul>
+  </nav>

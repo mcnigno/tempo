@@ -1,0 +1,53 @@
+
+<div class="row" id="timesheet">
+    <div class="col-3 col-md-3">
+        <div>
+            
+            {%for project in projects%}
+            <h3>{{project.name}}</h3>
+                {%for projecttask in project.ProjectTasks%}
+                <ul class="list-group">
+                    
+                    {% if projecttask.id == projecttask_id -%}
+                    <button type="button" hx-get="/ts/projecttask/{{projecttask.id}}" hx-target="#timesheet" hx-swap="outerHTML swap:0.5s" class="list-group-item d-flex justify-content-between align-items-center active">
+                        {{projecttask.name}}
+                        <span class="badge badge-primary badge-pill">14</span>
+                    </button>
+                    {% else -%}
+                    
+                    <button type="button" hx-get="/ts/projecttask/{{projecttask.id}}" hx-target="#timesheet" hx-swap="outerHTML swap:0.5s" class="list-group-item d-flex justify-content-between align-items-center">
+                        {{projecttask.name}}
+                        <span class="badge badge-primary badge-pill">14</span>
+                    </button>
+                    {% endif %}
+                    
+                </ul> 
+                {%endfor%}
+            {%endfor%}   
+        </div>
+        <button type="button" hx-get="/ts/projecttask/pause" hx-target="#new-deliverable" hx-swap="outerHTML swap:0.5s" class="btn btn-primary">Pause</button>
+    </div>
+    <div id="new-deliverable" class="col-9 col-md-9">
+
+        <form hx-post="/ts/deliverable/new" hx-target="#new-deliverable" class="mb-3">
+            <div class="row">
+                <div class="col-4 col-md-4">
+                    <input type="text" placeholder="Deliverable" name="name" class="form-control mb-3" hx-post="/ts/deliverable/pending" hx-target="#pending" hx-trigger="keyup changed delay:500ms, name"/>
+                </div>
+                <div class="col-2 col-md-2">
+                    <input type="hidden" name="projecttask_id" value="{{projecttask_id}}" />
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </div>
+        </form>
+        <h3>Pending Task</h3>
+        <div id="pending"></div>
+
+        
+   
+    </div>
+    
+</div>
+

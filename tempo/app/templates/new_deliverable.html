@@ -1,0 +1,122 @@
+<div id="task_list">
+    
+    <h3>Deliverable name: {{new_deliverable.name}} Rev {{new_deliverable.revision}}</h3>
+    <h4>Activity: {{new_deliverable.projecttask}}</h4>
+    {% for deliverable in deliverables%}
+        {%for task in deliverable.Tasks%}
+        {%if task.id == task_active -%}
+        <div class="jumbotron">
+            <h4 text-align="right">{{deliverable.name}} Rev {{deliverable.revision}}</h4>
+            <h3 class="display-4">{{task.name}}</h3>
+            <p>start: {{task.start.strftime('%d-%m-%Y %H:%M:%S')}} </p>
+            <hr class="my-4">
+            <p class="lead">Description: {{task.description}}</p>
+            <hr class="my-4">
+            <table class="table">
+                {%if task.Comments -%}
+                <thead>
+                  <tr>
+                    <th scope="col-8 col-md-8">Comments</th>
+                    <th scope="col">Author</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                {%endif -%}
+                <tbody id="task-comments{{task.id}}" hx-target="closest tr" hx-swap="outerHTML swap:0.5s"> 
+                    {%for comment in task.Comments%}
+                    <tr>
+                        <td class="comment ">{{comment.text}}</td>
+                        <td class="user_name ">{{comment.created_by}}</td>
+                        <td>
+                            <button class="btn" hx-get="/get-edit-form/{{comment.id}}"><i class="fa fa-pencil" ></i></button>
+                            
+                        </td>
+                        <td>
+                            <button class="btn" hx-delete="/delete/{{comment.id}}"><i class="fa fa-trash" ></i></button>
+                            
+                        </td>
+                    </tr>
+                        
+                    {%endfor%}
+                </tbody>
+            </table>
+            
+            
+                        <h3>New Comment</h3>
+                            <form hx-post="/ts/task/new/comment/{{task_active}}" hx-swap="beforeend" hx-target="#task-comments{{task_active}}" class="mb-3">
+                                <div class="row">
+                                    <div class="col-10 col-md-10">
+                                        
+                                        <input type="text" placeholder="Comment Text" name="text" class="form-control mb-3" />
+                                    </div>
+                                    <div class="col-2 col-md-2">
+                                        <input type="hidden" name="task_id" value="{{task_active}}" />
+
+                                        <button type="submit" class="btn btn-comment">Comment</button>
+                                    </div>
+
+                                </div>
+                            </form>
+        <hr class="my-4">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2">
+                    
+                    <button class="btn btn-primary" type="submit" hx-post="/ts/task/completed/{{task.id}}" hx-target="#task_list">Completed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        {%elif task.Comments -%}
+        <div class="jumbotron deactive-bgr">
+        {%if task.end -%}
+            <h3 text-align="right">{{deliverable.name}} Rev {{deliverable.revision}}</h3>
+            <h2 class="display-4">{{task.name}}</h2>
+            <p>start: {{task.start.strftime('%d-%m-%Y %H:%M:%S')}} end: {{task.end.strftime('%d-%m-%Y %H:%M:%S')}}</p>
+        {%elif task.start and task.end == 'None' -%}
+            <h3 text-align="right">{{deliverable.name}} Rev {{deliverable.revision}}</h3>
+            <h2 class="display-4">{{task.name}}</h2>
+            <p>start: {{task.start.strftime('%d-%m-%Y %H:%M:%S')}} end: {{task.end}}</p>
+        {%else -%}
+            <h3 text-align="right">{{deliverable.name}} Rev {{deliverable.revision}}</h3>
+            <h2 class="display-4">{{task.name}}</h2>
+            <p>start: {{task.start}} end: {{task.end}}</p>
+        {%endif -%}
+            <p class="lead">Description: {{task.description}}</p>
+        
+        <table class="table">
+            {%if task.Comments -%}
+            <thead>
+              <tr>
+                <th scope="col">Comments</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            {%endif -%}
+            <tbody id="task-comments{{task.id}}" hx-target="closest tr" hx-swap="outerHTML swap:0.5s"> 
+                {%for comment in task.Comments%}
+                <tr>
+                    <td class="comment ">{{comment.text}}</td>
+                    <td class="user_name ">{{comment.created_by}}</td>
+                    
+                </tr>
+                    
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+        {%endif -%}
+
+            
+            
+
+        {%endfor%}
+    {%endfor%}
+    
+
+    
+</div>

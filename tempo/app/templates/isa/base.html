@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ISA Timesheet</title>
+        <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+        <script src="{{url_for('static',filename='js/bootstrap.bundle.js')}}"></script>
+        {% block head_css %}
+        <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.css')}}"></link>
+        <link rel="stylesheet" href="{{url_for('static',filename='css/custom.css')}}"></link>
+        <link rel="stylesheet" href="{{url_for('static',filename='css/font-awesome.min.css')}}"></link>
+
+        {% endblock %}
+    </head>
+    {% include "isa/navbar.html" %}
+    <div class="container-fluid text-bg-dark flash"></div>
+    <div class="container-fluid text-bg-dark g-5 mainbox">
+        
+        <div class="row">
+
+            <div class="col-3">{% include "isa/projecttask.html" %}</div>
+            <div id="new-deliverable" class="col">
+
+                <div style="width: 80%; margin: 0 auto;">
+                    <canvas id="stackedBarChart"></canvas>
+                  </div>
+                  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                  <script>
+                    var labels = {{ labels | tojson | safe }};
+                    var value1_data = {{ value1_data | tojson | safe }};
+                    var value2_data = {{ value2_data | tojson | safe }};
+                
+                    var data = {
+                      labels: labels,
+                      datasets: [
+                        {
+                          label: 'Work',
+                          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                          data: value1_data
+                        },
+                        {
+                          label: 'Pausa',
+                          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                          data: value2_data
+                        }
+                      ]
+                    };
+                
+                    var options = {
+                      scales: {
+                        x: {
+                          stacked: true
+                        },
+                        y: {
+                          stacked: true
+                        }
+                      }
+                    };
+                
+                    var ctx = document.getElementById('stackedBarChart').getContext('2d');
+                
+                    var stackedBarChart = new Chart(ctx, {
+                      type: 'bar',
+                      data: data,
+                      options: options
+                    });
+                  </script>
+                  
+
+            </div>
+
+            
+            
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 footer-cst">
+        <div class="container">
+          <span class="">ISA Timesheet</span>
+        </div>
+    </footer>
+    
