@@ -210,6 +210,9 @@ class Projecttask(Model, AuditMixin):
     users = relationship('Myuser', secondary=assoc_users_prjtasks, backref='ProjectTasks')
     def __repr__(self):
         return self.name 
+    
+    def est_min(self):
+        return self.est_seconds/60
 
 
       

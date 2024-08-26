@@ -446,7 +446,7 @@ def projecttask_leave():
         Task.created_by_fk == g.user.id,
         Task.start != None
     ).order_by(Task.start.desc()).first()
-    print(last_task.name, last_task.deliverable, last_task.id, last_task.end)
+    #print(last_task.name, last_task.deliverable, last_task.id, last_task.end)
      
     if last_task and last_task.end is None:
         print('Last Task:', last_task.id)
@@ -902,7 +902,7 @@ class TaskPredefinedView(ModelView):
 
 class ProjectTaskView(ModelView):
     datamodel = SQLAInterface(Projecttask) 
-    list_columns = ['name', 'order', 'users']
+    list_columns = ['name','est_min', 'users']
     show_columns = ['name', 'order','description', 'est_seconds','hour_rate','billable', 'users','created_by','created_on','changed_by','changed_on']
     add_columns = ['name', 'order','description', 'est_seconds','hour_rate','billable', 'users']
     edit_columns = ['name', 'order','description', 'est_seconds','hour_rate','billable', 'users']
@@ -994,10 +994,10 @@ class InvoiceView(ModelView):
 from .helpers import to_csv
 class ProjectStatusView(ModelView):
     datamodel = SQLAInterface(Project_status)  
-    list_columns = ['id', 'order_revision', 'task_time','est_time','amount', 'approved', 'approved_on','deliverables_count', 'changed_on']
+    list_columns = [ 'order_revision', 'task_time','est_time','amount', 'approved', 'approved_on','deliverables_count', 'changed_on']
     add_columns = ['order_revision', 'start','end', 'approved', 'approved_on']
     edit_columns = ['order_revision', 'start','end', 'approved', 'approved_on']
-    show_columns = ['order_revision', 'start','end','task_time', 'approved', 'approved_on','created_by','created_on','changed_by','changed_on']
+    show_columns = ['id','order_revision', 'start','end','task_time', 'approved', 'approved_on','created_by','created_on','changed_by','changed_on']
     
     related_views = [DeliverableView, InvoiceView]
     
