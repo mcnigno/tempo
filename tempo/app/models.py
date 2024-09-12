@@ -314,7 +314,7 @@ class Step(Model, AuditMixin):
     projecttask = relationship(Projecttask, backref='Steps')
     input_required = Column(String(100)) 
     completed = Column(Boolean, default=False)
-    photo = Column(ImageColumn(size=(1800, 700, True), thumbnail_size=(64, 48, True)))
+    photo = Column(ImageColumn(size=(1800, 900, True), thumbnail_size=(64, 48, True)))
 
     def photo_img(self): 
         im = ImageManager()
