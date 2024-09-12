@@ -210,7 +210,7 @@ class Projecttask(Model, AuditMixin):
     billable = Column(Boolean, default=True)
     users = relationship('Myuser', secondary=assoc_users_prjtasks, backref='ProjectTasks')
     def __repr__(self):
-        return self.name 
+        return self.project.name +" | " + self.name 
     
     def est_min(self):
         return self.est_seconds/60
@@ -253,7 +253,7 @@ db.session.query(
 '''
 class Task(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
+    name = Column(String(200), nullable=False)
     description = Column(Text, nullable=True)
     timesheet_id = Column(Integer, ForeignKey('timesheet.id'))
     timesheet = relationship(Timesheet, backref='Tasks')
@@ -308,7 +308,7 @@ class Task(Model, AuditMixin):
 class Step(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
     position = Column(Integer, nullable=False, default=0, unique=True)
-    name = Column(String(100), nullable=False)
+    name = Column(String(200), nullable=False)
     description = Column(Text)
     projecttask_id = Column(Integer, ForeignKey('projecttask.id'))
     projecttask = relationship(Projecttask, backref='Steps')
