@@ -304,6 +304,7 @@ class Task(Model, AuditMixin):
     @renders('end')
     def task_end(self):
         return date_csm(self.end)
+    
 
 class Step(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
@@ -312,11 +313,11 @@ class Step(Model, AuditMixin):
     description = Column(Text)
     projecttask_id = Column(Integer, ForeignKey('projecttask.id'))
     projecttask = relationship(Projecttask, backref='Steps')
-    input_required = Column(String(100))
+    input_required = Column(String(100)) 
     completed = Column(Boolean, default=False)
-    photo = Column(ImageColumn(size=(700, 1100, True), thumbnail_size=(64, 48, True)))
+    photo = Column(ImageColumn(size=(1100, 700, True), thumbnail_size=(64, 48, True)))
 
-    def photo_img(self):
+    def photo_img(self): 
         im = ImageManager()
         if self.photo:
             return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
