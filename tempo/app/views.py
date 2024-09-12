@@ -1,7 +1,7 @@
 from flask import render_template, request, g, redirect, flash, send_file
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import ModelView, ModelRestApi, BaseView, expose, has_access, CompactCRUDMixin
-from .models import Author, Book, Project, Projecttask, Deliverable, Timesheet, Task, Comments, Account, Order, Order_revision, Project_status, Invoice
+from .models import Author, Book, Project, Projecttask, Deliverable, Timesheet, Task, Comments, Account, Order, Order_revision, Project_status, Invoice, Step
 from .sec_models import Myuser
 from flask_appbuilder.models.sqla.filters import FilterEqualFunction, FilterStartsWith, FilterRelationOneToManyEqual, FilterEqual
 from flask_appbuilder.actions import action
@@ -578,6 +578,7 @@ class Isa(BaseView):
         name = request.form['name']
         
         projecttask_id = request.form['projecttask_id']
+        screenshots = {}
         
         # cerca l'ultima rev per il deliverable
         deliverable = db.session.query(Deliverable).filter(
@@ -612,6 +613,12 @@ class Isa(BaseView):
                     completed = task.completed
                 )
                 db.session.add(new_task)
+                db.session.flush()
+                step = db.session.query(Step).filter(
+                    Step.name == task.name,
+                    Step.projecttask_id == task.deliverable.projecttask_id
+                ).first()
+                screenshots[new_task.id] = step.photo_img()
         # altrimenti crea un nuovo deliverable    
         else:
             
@@ -621,17 +628,20 @@ class Isa(BaseView):
             )
             db.session.add(new_deliverable)
             db.session.flush()
-            tasks = db.session.query(Task).filter(
-            Task.projecttask_id == projecttask_id).all()
-
+            tasks = db.session.query(Step).filter(
+            Step.projecttask_id == projecttask_id).order_by(Step.position.asc()).all()
+            
             for task in tasks:
                 new_task = Task(
                     deliverable_id = new_deliverable.id,
                     description = task.description,
                     name = task.name,
                     input_required = task.input_required
+                    
                 )
                 db.session.add(new_task)
+                db.session.flush()
+                screenshots[new_task.id] = task.photo_img()
         
         
         db.session.commit()
@@ -653,6 +663,7 @@ class Isa(BaseView):
         return self.render_template('isa/deliverable2.html', 
                                     deliverable = new_deliverable,
                                     task_active = task_active,
+                                    screenshots=screenshots,
                                     task_list=task_list)
             
      # pending se no input required   
@@ -779,10 +790,17 @@ class Isa(BaseView):
             Task.deliverable_id == deliverable.id).all()
         
         task_active = 0
+        screenshots = {}
         for task in task_list:
             if task.completed == False:
                 task_active = task.id
                 task.start = datetime.datetime.now()
+                # Cerca lo step dal nome
+                step = db.session.query(Step).filter(
+                    Step.name == task.name,
+                    Step.projecttask_id == task.deliverable.projecttask_id
+                ).first()
+                screenshots[task.id] = step.photo_img()
                 session.commit()         
                 break
         
@@ -829,6 +847,7 @@ class Isa(BaseView):
                                     #deliverables = deliverables,
                                     #comments = comments, 
                                     deliverable = task.deliverable,
+                                    screenshots=screenshots,
                                     task_active = task_active)
         
     @expose('/comments/<int:id>', methods=["GET","POST"])
@@ -871,12 +890,36 @@ class Isa(BaseView):
             return u"{}".format(chosen_row)
     
     
-
-
+from flask_appbuilder.widgets import ListThumbnail
+class StepView(ModelView):
+    datamodel = SQLAInterface(Step) 
+    list_columns = ['position', 'name',  'description','input_required']
+    show_columns = ['position','name', 'photo_img', 'description','input_required']
+    add_columns =  ['projecttask','position','name', 'photo', 'description','input_required']
+    base_order = ('position','asc')
+    #list_widget = ListThumbnail
+    label_columns = {
+        'projecttask.order.project': 'Project',
+        'photo_img_thumbnail': 'img',
+        'projecttask': 'PRJ Task',
+        'photo_img':'Img',
+        'position':'Pos',
+        'input_required': 'Input',
+        'name': 'Step' 
+    }
+    
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False) 
+    def muldelete(self, items):
+        if isinstance(items, list):
+            self.datamodel.delete_all(items)
+            self.update_redirect()
+        else:
+            self.datamodel.delete(items)
+        return redirect(self.get_redirect())
   
 
 
-
+'''
 class TaskPredefinedView(ModelView): 
     datamodel = SQLAInterface(Task) 
     list_columns = ['name','description','projecttask', 'input_required']
@@ -899,7 +942,7 @@ class TaskPredefinedView(ModelView):
             self.datamodel.delete(items)
         return redirect(self.get_redirect())
        
-
+'''
 class ProjectTaskView(ModelView):
     datamodel = SQLAInterface(Projecttask) 
     list_columns = ['name','est_min', 'users']
@@ -907,7 +950,7 @@ class ProjectTaskView(ModelView):
     add_columns = ['name', 'order','description', 'est_seconds','hour_rate','billable', 'users']
     edit_columns = ['name', 'order','description', 'est_seconds','hour_rate','billable', 'users']
     
-    related_views = [TaskPredefinedView]  
+    related_views = [StepView]  
     
     list_title = 'Project Task | List'
     add_title = 'Project Task | Add'
@@ -1122,7 +1165,7 @@ class TaskView(ModelView):
     datamodel = SQLAInterface(Task) 
     list_columns = ['deliverable.projecttask.order.project','deliverable.projecttask','name', 'deliverable', 'time','input_required', 'completed']
     add_columns = ['name', 'deliverable', 'timesheet', 'projecttask', 'duration', 'completed']
-    base_filters = [['projecttask', FilterRelationOneToManyEqual, 'None']]
+    #base_filters = [['projecttask', FilterRelationOneToManyEqual, 'None']]
     
     label_columns = {
         'deliverable.projecttask.order.project': 'Project',
@@ -1142,6 +1185,7 @@ class TaskView(ModelView):
             self.datamodel.delete(items)
         return redirect(self.get_redirect())
     
+
 
 
 class TimesheetView(ModelView):
@@ -1187,10 +1231,19 @@ class CommentsView(ModelView):
 
 class MyTaskView(ModelView):
     datamodel = SQLAInterface(Task) 
-    list_columns = ['id','name', 'deliverable', 'timesheet', 'deliverable.projecttask','task_start','task_end', 'time', 'completed']
-    add_columns = ['name', 'deliverable', 'timesheet', 'duration', 'completed']
-    base_filters = [['projecttask', FilterRelationOneToManyEqual, 'None'],
-                    ['created_by', FilterEqualFunction, get_user]]
+    list_columns = ['deliverable.projecttask.order.project','deliverable.projecttask','name', 'deliverable', 'time','input_required', 'completed']
+    add_columns = ['name', 'deliverable', 'timesheet', 'projecttask', 'duration', 'completed']
+    base_filters = [['created_by', FilterEqualFunction, get_user]]
+    
+    label_columns = {
+        'deliverable.projecttask.order.project': 'Project',
+        'deliverable.projecttask': 'Task',
+        'completed':'Status', 
+        'name': 'Step'
+         
+        
+    }
+    
     
 class MyTimesheetView(ModelView):
     datamodel = SQLAInterface(Timesheet)
@@ -1211,11 +1264,12 @@ appbuilder.add_view(Isa, "ISA Timesheet", category='ISA')
 appbuilder.add_view(ProjectView, "Projects", category='Management') 
 appbuilder.add_view_no_menu(ProjectTaskView) 
 #appbuilder.add_view(ProjectTaskView, "Project Task", category='Management') 
-appbuilder.add_view(TaskPredefinedView, "Task Predefined", category='Management')
+#appbuilder.add_view(TaskPredefinedView, "Task Predefined", category='Management')
 appbuilder.add_view(TimesheetView, "Timesheet", category='Management')
 appbuilder.add_view(DeliverableView, "Deliverable", category='Management') 
 appbuilder.add_view(TaskView, "Task", category='Management')
-appbuilder.add_view(CommentsView, "Comments", category='Management')
+appbuilder.add_view_no_menu(StepView)
+appbuilder.add_view_no_menu(CommentsView)
 
 appbuilder.add_view(AccountView, "Account", category='Finance')
 appbuilder.add_view(OrderView, "Order", category='Finance')

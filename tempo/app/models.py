@@ -1,12 +1,13 @@
 from flask_appbuilder import Model
-from flask_appbuilder.models.mixins import AuditMixin, FileColumn 
+from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
+from flask_appbuilder.filemanager import ImageManager 
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Boolean, DateTime, Text, Table, func, Float
 from sqlalchemy.orm import relationship
 from .sec_models import Myuser
 from flask_appbuilder.models.decorators import renders
 from markupsafe import Markup
 from sqlalchemy.orm import session
-from flask import g
+from flask import g, url_for
 
 def get_user_id():
     return g.user.id
@@ -265,6 +266,28 @@ class Task(Model, AuditMixin):
     duration = Column(Integer)
     input_required = Column(String(100))
     completed = Column(Boolean, default=False)
+    photo = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    '''
+    def photo_img(self):
+        im = ImageManager()
+        if self.photo:
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="' + im.get_url(self.photo) +\
+              '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+
+    def photo_img_thumbnail(self):
+        im = ImageManager()
+        if self.photo:
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="' + im.get_url_thumbnail(self.photo) +\
+              '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+    '''
     def __repr__(self):
         return str(id) + self.name 
     
@@ -281,7 +304,41 @@ class Task(Model, AuditMixin):
     @renders('end')
     def task_end(self):
         return date_csm(self.end)
+
+class Step(Model, AuditMixin):
+    id = Column(Integer, primary_key=True)
+    position = Column(Integer, nullable=False, default=0, unique=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    projecttask_id = Column(Integer, ForeignKey('projecttask.id'))
+    projecttask = relationship(Projecttask, backref='Steps')
+    input_required = Column(String(100))
+    completed = Column(Boolean, default=False)
+    photo = Column(ImageColumn(size=(640, 480, True), thumbnail_size=(64, 48, True)))
+
+    def photo_img(self):
+        im = ImageManager()
+        if self.photo:
+            return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
+             '" class="screenshot"><img src="' + im.get_url(self.photo) +\
+              '" alt="Photo" class="screenshot img-rounded img-responsive" style="margin-right: auto;margin-left: auto;display: block;"></a>') 
+        else:
+            return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+
+    def photo_img_thumbnail(self):
+        im = ImageManager()
+        if self.photo:
+            return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="' + im.get_url_thumbnail(self.photo) +\
+              '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
     
+    def __repr__(self):
+        return str(id) + self.name 
+        
 class Typeoffwork(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)

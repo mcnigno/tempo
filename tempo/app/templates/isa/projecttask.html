@@ -2,7 +2,8 @@
 <div id="projecttasks" >
 {%for project in projects%}
 
-<h4>{{project.name}}</h4>
+<h4><i class="fa fa-briefcase prj-icon" aria-hidden="true"></i>
+    {{project.name}}</h4>
 
 <div class="list-group">
     {%for order in project.Orders%}
@@ -10,15 +11,17 @@
             {% if g.user in projecttask.users -%}
                 {% if projecttask.id != id -%}
                 
-                <button type="button" hx-get="/isa/projecttask/{{projecttask.id}}" hx-target="#projecttasks" hx-swap="innerHTML swap:0.5s" class="btn btn-secondary d-flex justify-content-between btn-prj align-items-center ">
-                    {{projecttask.name}}
+                <button type="button" hx-get="/isa/projecttask/{{projecttask.id}}" hx-target="#projecttasks" hx-swap="innerHTML swap:0.5s" class="btn btn-secondary d-flex justify-content-between prj-task-btn ">
+                    <i class="fa fa-tasks prj-task-icon" aria-hidden="true"><span class="prj-task-title">{{projecttask.name}}</span></i>
+                        
                     <span class="badge badge-primary badge-pill bg-dark" hx-get="/isa/projecttask/timesheet/{{projecttask.id}}" hx-target="this" hx-swap="innerHTML swap:0.5s" hx-trigger="load">ND</span>
                 </button>
                 
                 
                 {% else -%}
-                <button type="button" hx-get="/isa/projecttask/{{projecttask.id}}" hx-target="#projecttasks" hx-swap="innerHTML swap:0.5s" class="btn btn-warning d-flex justify-content-between btn-prj align-items-center">
-                    {{projecttask.name}}
+                <button type="button" hx-get="/isa/projecttask/{{projecttask.id}}" hx-target="#projecttasks" hx-swap="innerHTML swap:0.5s" class="btn btn-warning d-flex justify-content-between prj-task-btn-active">
+                    <i class="fa fa-tasks prj-task-icon" aria-hidden="true"><span  class="prj-task-title">{{projecttask.name}}</span></i>
+                        
                     <span class="badge badge-primary badge-pill bg-dark" hx-get="/isa/projecttask/timesheet/{{projecttask.id}}" hx-target="this" hx-swap="innerHTML swap:0.5s" hx-trigger="every 5s">ND</span>
                 </button>
                 

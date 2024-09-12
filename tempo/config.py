@@ -27,7 +27,7 @@ CSRF_ENABLED = True
 APP_NAME = "ISA Timesheet"
 
 # Uncomment to setup Setup an App icon
-APP_ICON = "/static/images/q.png"
+APP_ICON = "/static/images/Q-logo.png"
 
 # ----------------------------------------------------
 # AUTHENTICATION CONFIG

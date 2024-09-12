@@ -2,10 +2,10 @@
 <form id="search_form" hx-post="/isa/deliverable/new" hx-target="#new-deliverable" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
   
   <div class="input-group">
-      <span class="input-group-text text-bg-secondary" id="basic-addon1">{{projecttask.order.project.name}} | {{projecttask.name}}</span>
+      <span class="input-group-text search-span" id="basic-addon1">{{projecttask.order.project.name}} | {{projecttask.name}}</span>
       <textarea rows="1" cols="50" type="search" name="name" class="form-control form-control-dark text-bg-dark nav-search-input" placeholder="Search..." aria-label="Search" hx-post="/isa/search/pending2/1" hx-target="#new-deliverable" hx-trigger="keyup changed delay:500ms, name"></textarea>
       <input type="hidden" name="projecttask_id" value="{{projecttask.id}}" />
-      <button type="button submit" class="btn btn-outline-light me-2">Send</button>
+      <button type="button submit" class="btn btn-search me-2">Send</button>
     </div>
     
   </form>

@@ -2,21 +2,25 @@
 {% for comment in comments %}
 <div>
     
-        <h6 class=" comm-deliverable-title">{{comment.task.deliverable.name}} <span class="revision">Rev {{comment.task.deliverable.revision}}</span></h5> 
-        <p class=" comment-title">ON {{comment.task.name}}</p>
-        <p class=" comment">{{comment.text}} </p>
+         
+        
+        <div class="comment-text-div">
+            
+            <div class="input-group">
+                <span class="input-group-text comment-span" id="basic-addon1"><i class="fa fa-comments-o" aria-hidden="true"></i></span>
+                <p class=" comment-title">{{comment.task.name}}</p>
+                 
+            </div>
+            <p class="comm-input ms-3 mt-2 mb-2" style="width: auto;">{{comment.text}}</p>
+            
+            
+            
+        </div>
         <p class=" task-small">{{comment.created_by}} - {{comment.created_on.strftime('%A %d %B, %Y')}}</p>
+        
     </div>   
 {% endfor %}
 
-    <form hx-post="/isa/comments/{{task.id}}" hx-target="#comments-task{{task.id}}" >
-        <div class="input-group ms-2">
-            <span class="input-group-text text-bg-secondary" id="basic-addon1">Add New Comment:</span>
-            <hr>
-            <textarea rows="2" cols="50"type="text" class="form-control form-control-dark text-bg-dark nav-search-input" name="text" id="" placeholder="Add Comment"></textarea>
-            
-            <button type="submit" class="btn btn-primary text-bg-primary ms-2">Add</button>
-        </div>
-    </form>
+    
 
 

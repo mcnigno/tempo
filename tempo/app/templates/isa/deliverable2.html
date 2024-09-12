@@ -2,19 +2,23 @@
 
 
 <div class="container-fluid">
-    <div class="row align-items-start taskbox">
-        <div class="col-2">
+    <div class="row align-items-start main-box">
+        <div class="col-2 taskbox">
             {% for task in deliverable.Tasks %}
-            <div class="row">
+            <div class="row  step-row">
                 {% if task_active != task.id and task.completed %}
-                <p class="h4 ms-2" style="color: #979283; font-weight: bold ">{{task.name}}</p>
-                <p class="align-items-start ms-2 task-small" style="color: rgb(255, 255, 255)">by {{task.created_by}}</p>
-                <p class="align-items-start ms-2 task-small" style="color: rgb(206, 206, 206); line-height: 0px;">{{task.created_on.strftime('%A %d %B, %Y - %H:%m:%S')}}</p>
+                <p class="ms-2 step-row-completed"><i class="fa fa-check-circle" aria-hidden="true"></i>
+                    {{task.name}}</p>
+                <p class="align-items-start ms-2 step-by">by {{task.created_by}}</p>
+                <p class="align-items-start ms-2 step-on"">{{task.changed_on.strftime('%d %B, %Y - %H:%m:%S')}}</p>
                 
                 {% elif task_active != task.id %}
-                <p class="tasktitle" style="color: #979283;">{{task.name}}</p>
+                <p class="step-row-inactive"><i class="fa fa-pause" aria-hidden="true"></i>
+                    {{task.name}}</p>
                {% else %}
-                <p class="tasktitle">{{task.name}}</p>        
+                <p class="step-row-active"><i class="fa fa-play" aria-hidden="true"></i>
+
+                    {{task.name}}</p>        
                 {% endif %}
 
             </div>
@@ -34,10 +38,10 @@
         
             
             
-            <div class="row">
+            <div class="row ">
                 {% if task.id == task_active -%}
-                <div class="col-10">
-                    <h6 class=" comm-deliverable-title">{{deliverable.name}} <span class="revision">Ver {{deliverable.revision}}</span></h5>
+                <div class="col-10 step-active-div">
+                    <h6 class="deliverable-title">{{deliverable.name}} <span class="revision">Ver {{deliverable.revision}}</span></h5>
                 </div>
                 <div class="col2">
                     <div class="clearfix">
@@ -46,32 +50,58 @@
                     </div>
 
                 </div>
+                
+                <div class="screenshot">
+                    {{screenshots[task.id]}}
+                </div>
+                <hr>
                 <div class="row align-items-start taskdescription">{{task.description}}</div>
                     
                     
                     {% if task.input_required != ""  %}
+                    <hr>
+                    
                         {% for del in deliverable.name.splitlines() %}
                         <form class="col ms-3 mb-3 mb-lg-0 me-lg-3" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">
+                        
+                        
                             <div class="input-group">
-                                <span class="input-group-text text-bg-secondary task-input" id="basic-addon1">{{task.input_required}} for {{del}}</span>
-                            <input type="text" name="input_required_{{del}}" placeholder="{{task.input_required}}" class="form-control form-control-dark text-bg-dark nav-search-input task-input" required>
+                                <span class="input-group-text text-bg-secondary span-task-input" id="basic-addon1">{{task.input_required}} for {{del}}</span>
+                                <input type="text" name="input_required_{{del}}" placeholder="{{task.input_required}}" class="form-control form-control-dark text-bg-dark nav-search-input task-input" required>
                             </div>
+                        
                         {% endfor %}
-                        <hr>
-                            
                             <button type="button submit" class="btn btn-success task-btn mt-5 mb-5" >Done</button>
-                            
+                        
+                       
+                    
+                        {% else%}
+                        <form class="col ms-3 mb-3 mb-lg-0 me-lg-3">
+                            <button type="button" class="btn btn-success task-btn mb-5 mt-5" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">Done</button>
+                        
+
+                    {% endif%}
+                </form>
+
+                    <hr>
+                    <div class="comments-form">
+                        <form hx-post="/isa/comments/{{task.id}}" hx-target="#comments-task{{task.id}}" >
+                            <div class="input-group ms-2">
+                                <span class="input-group-text comment-span" id="basic-addon1"><i class="fa fa-comments-o" aria-hidden="true"></i></span>
+                                <hr>
+                                <textarea rows="1" cols="10" type="text" class="form-control form-control-dark text-bg-dark comm-input" name="text" id="" style="width: auto; placeholder="Add Comment"></textarea>
+                                
+                                <button type="submit" class="btn btn-primary btn-comm-add ms-2"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                            </div>
+                        </form>
+                    </div>
+
+
                         
                     
                     
-                    {% else%}
-                    
-                    <form class="col ms-3 mb-3 mb-lg-0 me-lg-3">
 
-                    <button type="button" class="btn btn-success task-btn mb-5 mt-5" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">Done</button>
-                    </form>
-                    {% endif -%}
-                    </form>
+                    
                     
                                 
             
@@ -87,25 +117,22 @@
         </div>
     </div>
 
-        <div class=" col-4">
+        <div class=" col-3 comments-div">
             
            
             {% for task in deliverable.Tasks %}
             
+                {% if task.id == task_active -%}
+                <div> 
+                    <div class="col" id="comments-task{{task.id}}"></div>
+                </div>
+                <form> 
+                    <div type="hidden" hx-get="/isa/comments/{{task.id}}" hx-target="#comments-task{{task.id}}" hx-trigger="load" ></div>
+                </form>
                 
 
-            
-            {% if task.id == task_active -%}
-            <div> 
-                <div class="col-8" id="comments-task{{task.id}}"></div>
-            </div>
-            <form> 
-                <div type="hidden" hx-get="/isa/comments/{{task.id}}" hx-target="#comments-task{{task.id}}" hx-trigger="load" ></div>
-            </form>
-            
-
-            
-            {% endif -%}
+                
+                {% endif -%}
             {% endfor %}
         </div>
             
