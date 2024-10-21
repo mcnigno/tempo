@@ -61,7 +61,7 @@ class Account(Model, AuditMixin):
 
 class Project(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
+    name = Column(String(50), nullable=False)
     account_id = Column(Integer, ForeignKey('account.id'), nullable=False)
     account = relationship(Account, backref='Projects')
     def __repr__(self):
@@ -209,8 +209,8 @@ class Projecttask(Model, AuditMixin):
     #reject_restart = Column(Boolean, default=True)
     billable = Column(Boolean, default=True)
     users = relationship('Myuser', secondary=assoc_users_prjtasks, backref='ProjectTasks')
-    def __repr__(self):
-        return self.project.name # +" | " + self.name 
+    #def __repr__(self):
+    #    return self.project.name +" | " + self.name 
     
     def est_min(self):
         return self.est_seconds/60
