@@ -198,7 +198,7 @@ assoc_users_prjtasks = Table('users_prjtasks', Model.metadata,
 
 class Projecttask(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
+    name = Column(String(50), nullable=False)
     description = Column(Text)
     project_id = Column(Integer, ForeignKey('project.id'))
     project = relationship(Project, backref='ProjectTasks')
@@ -210,7 +210,7 @@ class Projecttask(Model, AuditMixin):
     billable = Column(Boolean, default=True)
     users = relationship('Myuser', secondary=assoc_users_prjtasks, backref='ProjectTasks')
     def __repr__(self):
-        return self.project.name +" | " + self.name 
+        return self.project.name # +" | " + self.name 
     
     def est_min(self):
         return self.est_seconds/60
