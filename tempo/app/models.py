@@ -309,7 +309,7 @@ class Task(Model, AuditMixin):
 
 class Step(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    position = Column(Integer, nullable=False, default=0, unique=True)
+    position = Column(Integer, nullable=False, default=0, unique=False)
     name = Column(String(200), nullable=False)
     description = Column(Text)
     projecttask_id = Column(Integer, ForeignKey('projecttask.id'))
