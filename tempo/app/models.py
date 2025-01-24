@@ -200,8 +200,8 @@ class Projecttask(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     description = Column(Text)
-    project_id = Column(Integer, ForeignKey('project.id'))
-    project = relationship(Project, backref='ProjectTasks')
+    #project_id = Column(Integer, ForeignKey('project.id'))
+    #project = relationship(Project, backref='ProjectTasks')
     order_id = Column(Integer, ForeignKey('order.id'))
     order = relationship(Order, backref='ProjectTasks')
     est_seconds = Column(Integer, default=0)
@@ -209,8 +209,8 @@ class Projecttask(Model, AuditMixin):
     #reject_restart = Column(Boolean, default=True)
     billable = Column(Boolean, default=True)
     users = relationship('Myuser', secondary=assoc_users_prjtasks, backref='ProjectTasks')
-    #def __repr__(self):
-    #    return self.project.name +" | " + self.name 
+    def __repr__(self):
+        return self.order.project.name +" | " + self.name 
     
     def est_min(self):
         return self.est_seconds/60
@@ -290,12 +290,14 @@ class Task(Model, AuditMixin):
     '''
     def __repr__(self):
         return str(id) + self.name 
-    
+    '''
     @renders('duration')
     def time(self): 
         tot_seconds = self.duration
         seconds = datetime.timedelta(seconds=tot_seconds).seconds
         return str(datetime.timedelta(seconds=seconds))
+    '''
+    
     
     @renders('start')
     def task_start(self):
@@ -316,6 +318,16 @@ class Step(Model, AuditMixin):
     completed = Column(Boolean, default=False)
     photo = Column(ImageColumn(size=(1800, 900, True), thumbnail_size=(64, 48, True)))
 
+    def img_url(self): 
+        im = ImageManager()
+        if self.photo: 
+            return Markup('<img class="imgx" src="' + im.get_url(self.photo) +\
+              '" alt="Photo" class="screenshot img-rounded img-responsive" style="margin-right: auto;margin-left: auto;display: block;">') 
+        else:
+            return Markup('<a href="' + url_for('StepView.show',pk=str(self.id)) +\
+             '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+
+    
     def photo_img(self): 
         im = ImageManager()
         if self.photo:

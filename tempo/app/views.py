@@ -618,7 +618,7 @@ class Isa(BaseView):
                     Step.name == task.name,
                     Step.projecttask_id == task.deliverable.projecttask_id
                 ).first()
-                screenshots[new_task.id] = step.photo_img()
+                screenshots[new_task.id] = step.img_url()
         # altrimenti crea un nuovo deliverable    
         else:
             

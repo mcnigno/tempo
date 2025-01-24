@@ -71,14 +71,23 @@
                             </div>
                         
                         {% endfor %}
+                        <div>
+                            <button type="button" class="btn btn-success task-btn mb-5 mt-5" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">Pending</button>
+                        </div>
+                        <div>
                             <button type="button submit" class="btn btn-success task-btn mt-5 mb-5" >Done</button>
+                        </div>
                         
                        
                     
                         {% else%}
                         <form class="col ms-3 mb-3 mb-lg-0 me-lg-3">
-                            <button type="button" class="btn btn-success task-btn mb-5 mt-5" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">Done</button>
-                        
+                            <div>
+                                <button type="button" class="btn btn-success task-btn mb-5 mt-5" hx-post="/isa/task/completed/{{task.id}}" hx-target="#new-deliverable">Pending</button>
+                            </div>
+                            <div>
+                                <button type="button submit" class="btn btn-success task-btn mt-5 mb-5" >Done</button>
+                            </div>
 
                     {% endif%}
                 </form>
@@ -141,3 +150,6 @@
 </div>
 
     
+<script>
+    $(document).ready(function(){$(".imgx").click(function(){this.requestFullscreen()})});
+</script>
